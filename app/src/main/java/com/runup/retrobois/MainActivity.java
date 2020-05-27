@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
 import com.runup.retrobois.helper.RetroClient;
 import com.runup.retrobois.helper.RetrofitClient;
 
@@ -57,12 +58,21 @@ public class MainActivity extends AppCompatActivity {
 //            }catch (Exception e){
 //                Log.i("Error",e.getMessage());
 //            }
-            Call<ModelSuccess> postKontakCall = mRetroClient.loginA(new Login(user.getText().toString(), password.getText().toString()));
-            postKontakCall.enqueue(new Callback<ModelSuccess>() {
+            Call<ModelSuccess> postLogin = mRetroClient.loginA(new Login(user.getText().toString(), password.getText().toString()));
+            postLogin.enqueue(new Callback<ModelSuccess>() {
                 @Override
                 public void onResponse(Call<ModelSuccess> call, Response<ModelSuccess> response) {
-//                    myToken.setText();
-                    finish();
+                    if(response.isSuccessful()){
+                        Gson gson = new Gson();
+                        ModelSuccess object;
+                        object = gson.fromJson(response.body().toString(), ModelSuccess.class);
+                        String token = object.getSuccess().getToken();
+                        Log.e("token", token);
+                        myToken.setText(token);
+                    } else {
+                        Log.e("log error", response.errorBody().toString());
+                        Toast.makeText(getApplicationContext(), response.errorBody().toString(),Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
