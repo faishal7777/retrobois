@@ -21,11 +21,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     EditText user, password;
-    Retrofit retrofit;
     Button getToken;
     TextView myToken;
-    String baseUrl = "http://ardhymax.site/api/";
     RetroClient mRetroClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,15 +57,12 @@ public class MainActivity extends AppCompatActivity {
 //            }catch (Exception e){
 //                Log.i("Error",e.getMessage());
 //            }
-            Call<ModelSuccess> postLogin = mRetroClient.loginA(new Login(user.getText().toString(), password.getText().toString()));
+            Call<ModelSuccess> postLogin = mRetroClient.masuk(user.getText().toString(), password.getText().toString());
             postLogin.enqueue(new Callback<ModelSuccess>() {
                 @Override
                 public void onResponse(Call<ModelSuccess> call, Response<ModelSuccess> response) {
                     if(response.isSuccessful()){
-                        Gson gson = new Gson();
-                        ModelSuccess object;
-                        object = gson.fromJson(response.body().toString(), ModelSuccess.class);
-                        String token = object.getSuccess().getToken();
+                        String token = response.body().getSuccess().getToken();
                         Log.e("token", token);
                         myToken.setText(token);
                     } else {
